@@ -2,8 +2,7 @@ import pandas as pd
 import os
 from typing import List
 
-from src.DataClasses import DataProfile
-
+from src.sentimental_agent.DataClasses import DataProfile
 
 ### customs function.
 def load_data_from_csv(path: str) -> pd.DataFrame:
