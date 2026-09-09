@@ -17,11 +17,11 @@ def main():
 
     dataprofiles = get_df_by_platform_product(df=df)
     logger.info(f"Number of unique platform-product combinations found: {len(dataprofiles)}")
-    
+
     for dataprofile in dataprofiles:
         dataprofile.filtered_views = get_top_and_low_views_from_df(df=dataprofile.filtered_df, items=20)
-
-    logger.info(dataprofiles[0].model_dump())
+        logger.info(f"Processed platform-product: {dataprofile.platform}-{dataprofile.product} with {len(dataprofile.filtered_views)} filtered views.")
+    
 
 
 

@@ -1,0 +1,28 @@
+2026-09-09 21:59:11 - __main__ - INFO - Class Logger initiated.
+2026-09-09 21:59:11 - __main__ - INFO - Data loaded from amazon_google_reviews.csv with shape: (6200, 7)
+2026-09-09 21:59:11 - __main__ - INFO - Number of unique platform-product combinations found: 25
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Google Locations-Metropolitan Dental Health Clinic with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Google Locations-Blue Bottle Artisan Coffee Bar with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Google Locations-Bella Italia Trattoria with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Google Locations-Highland Public Library & Cultural Center with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Google Locations-Golden Dragon Dim Sum Palace with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Google Locations-City View Botanical Gardens & Park with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Google Locations-Greenwich Boutique Bed & Breakfast with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Google Locations-The Grand Vista Luxury Hotel & Spa with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Google Locations-Sakura Japanese Sushi & Ramen with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Google Locations-Precision Auto Mechanics & Body Works with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Google Locations-Central City Fitness & CrossFit with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Google Locations-Urban Yoga & Wellness Studio with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Amazon-Bedsure Cooling Bamboo Bed Sheets with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Amazon-Instant Pot Duo 7-in-1 Pressure Cooker with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Amazon-Deep Learning with Python by Francois Chollet with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Amazon-Logitech MX Master 3S Wireless Mouse with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Amazon-Keurig K-Elite Single Serve Coffee Maker with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Amazon-Atomic Habits by James Clear with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Amazon-Columbia Men's Watertight II Rain Jacket with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Amazon-Men's Lightweight Breathable Running Shoes with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Amazon-Sony WH-1000XM5 Noise Canceling Headphones with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Amazon-Kindle Paperwhite (16 GB) with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Amazon-Ninja Air Fryer Pro XL with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Amazon-Echo Dot Smart Speaker with 60 filtered views.
+2026-09-09 21:59:11 - __main__ - INFO - Processed platform-product: Amazon-Anker 65W GaN Fast Charger with 60 filtered views.
