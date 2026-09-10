@@ -47,16 +47,6 @@ class LLMAgent:
     # methods for report generation.
     def _create_folder(self):
         os.makedirs(self.report_path, exist_ok=True)
-    
-    
-    # def _format_views(self, data: dict) -> str:
-        
-    #     parts.append(
-    #         f"Review_ID": {r.get('published_date')}\n"
-    #         f"Review_Text: {r.get('title')}\n"
-    #         "-----"
-    #     )
-    #     return "\n\n".join(parts)
 
 
     def _consolidated_views(self, views: List[str]) -> str:
@@ -143,10 +133,10 @@ class LLMAgent:
             return ["General Feedback"]
 
 
-    async def categorize_views(self, view: dict) -> dict[str]:
+    async def _categorize_views(self, data: dict) -> dict[str]:
         self.logger.info("Start consolidating categories from views.")
 
-
+        view = data.get('Review_Text')
         
         system_instruction = """
         You are a precise view analyst. Your job is to identify the sentiment and category of the view."""
@@ -160,21 +150,35 @@ class LLMAgent:
         """
 
         # 乾淨地呼叫抽離後的非同步方法
-        classifedview = await self._call_llm(
+        response = await self._call_llm(
             model=self.model_name,
             messages=[
                 { "role": "system", "content": system_instruction },
                 { "role": "user", "content": user_prompt }
             ],
-            response_model=ClassifedView,
+            response_model=ClassifiedView,
             temperature=0.0,
             timeout=15.0,
             max_retries=3
         )
-        self.logger.info(f"Classified view generated: \n%s", pformat(classifiedview.model_dump(by_alias=True), indent=2))
-        
-        return c
+        self.logger.info(f"Classified view generated: \n%s", pformat(response.model_dump(by_alias=True), indent=2))
+        data["sentimental"] = response.sentimental
+        data['category'] = response.categories
 
+        return data
+
+    async def categorize_all_views(self, df: pd.DataFrame, categories: List[str]) -> pd.DataFrame:
+
+        
+        tasks = [self._categorize_views(data=data) for data in df.to_dict(orient="records")]
+        results = await asyncio.gather(*tasks)
+
+        return pd.DataFrame(results)
+
+
+
+
+        
 
     # async def generate_summary(self, search_results: List[dict]) -> None:
     #     self.logger.info("Start generating summary from search results.")

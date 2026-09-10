@@ -29,7 +29,7 @@ async def main():
         dataprofile.categories = await agent.generate_category(filtered_views=dataprofile.filtered_views)
 
         # categorize and assign sentimental for each views.
-        for record in dataprofile.filtered_df.to_dict(orient="records"):
+        dataprofile.processed_df = await agent.categorize_all_views(df=dataprofile.filtered_df, categories=dataprofile.categories)
 
 
 

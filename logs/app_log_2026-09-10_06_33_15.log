@@ -1,0 +1,49 @@
+2026-09-10 06:33:15 - __main__ - INFO - Class Logger initiated.
+2026-09-10 06:33:16 - __main__ - INFO - Data loaded from amazon_google_reviews.csv with shape: (6200, 7)
+2026-09-10 06:33:16 - __main__ - INFO - Number of unique platform-product combinations found: 25
+2026-09-10 06:33:16 - __main__ - INFO - Processed platform-product: Google Locations-Metropolitan Dental Health Clinic with 60 filtered views.
+2026-09-10 06:33:16 - __main__ - INFO - Start consolidating categories from views.
+2026-09-10 06:33:20 - httpx2 - INFO - HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 06:33:20 - __main__ - INFO - Category schema successfully generated: 
+{ 'category': [ 'Healthcare Services',
+                'Automotive Repair',
+                'Hotel & Accommodation',
+                'Restaurant Dining',
+                'Coffee Shop / Café',
+                'Parks & Gardens',
+                'General Negative Feedback']}
+2026-09-10 06:33:20 - __main__ - INFO - Start consolidating categories from views.
+2026-09-10 06:33:21 - httpx2 - INFO - HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 06:33:22 - httpx2 - INFO - HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 06:33:23 - httpx2 - INFO - HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-10 06:33:23 - instructor.v2.retry - ERROR - Max retries exceeded. Total attempts: 3, Last error: 'NoneType' object has no attribute 'get'
+2026-09-10 06:33:23 - __main__ - ERROR - LLM API call failed [Model: gpt-oss:120b-cloud]: <failed_attempts>
+
+<generation number="1">
+<exception>
+    1 validation error for ClassifiedView
+  Invalid JSON: expected value at line 1 column 1 [type=json_invalid, input_value='**Sentiment:** Negative ...ty (restaurant hygiene)', input_type=str]
+    For further information visit https://errors.pydantic.dev/2.13/v/json_invalid
+</exception>
+<completion>
+    ChatCompletion(id='chatcmpl-190', choices=[Choice(finish_reason='stop', index=0, logprobs=None, message=ChatCompletionMessage(content='**Sentiment:** Negative  \n**Category:** Cleanliness / Health & Safety (restaurant hygiene)', refusal=None, role='assistant', annotations=None, audio=None, function_call=None, tool_calls=None, reasoning='We need to identify sentiment (positive, negative, neutral) and category of the view. The view is a complaint about hygiene, negative sentiment. Category likely "Health & Safety" or "Cleanliness" or "Restaurant hygiene". The instruction: "precise view analyst". Probably categories like "Service", "Food", "Cleanliness", "Atmosphere", etc. We need to output something like:\n\nSentiment: Negative\nCategory: Cleanliness\n\nLet\'s produce that.'))], created=1789022000, model='gpt-oss:120b-cloud', object='chat.completion', metadata=None, moderation=None, service_tier=None, system_fingerprint='fp_ollama', usage=CompletionUsage(completion_tokens=124, prompt_tokens=149, total_tokens=273, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=None, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=None, text_tokens=None), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cache_write_tokens=None, cached_tokens=48, image_tokens=None, text_tokens=None)))
+</completion>
+</generation>
+
+<generation number="2">
+<exception>
+    1 validation error for ClassifiedView
+categories
+  Field required [type=missing, input_value={'sentiment': 'Negative',...ategory': 'Cleanliness'}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/missing
+</exception>
+<completion>
+    ChatCompletion(id='chatcmpl-806', choices=[Choice(finish_reason='stop', index=0, logprobs=None, message=ChatCompletionMessage(content='{\n  "sentiment": "Negative",\n  "category": "Cleanliness"\n}', refusal=None, role='assistant', annotations=None, audio=None, function_call=None, tool_calls=None, reasoning='The user says: "Correct your JSON ONLY RESPONSE, based on the following errors: 1 validation error for ClassifiedView Invalid JSON: expected value at line 1 column 1 ...". So they want a JSON response only, corrected. The previous answer was not JSON, just plain text. Need to output JSON with fields likely "sentiment" and "category". The format likely expected: {"sentiment":"Negative","category":"Cleanliness"} maybe more specific: "Health & Safety". Use proper JSON. Provide only JSON.'))], created=1789022002, model='gpt-oss:120b-cloud', object='chat.completion', metadata=None, moderation=None, service_tier=None, system_fingerprint='fp_ollama', usage=CompletionUsage(completion_tokens=259, prompt_tokens=401, total_tokens=660, completion_tokens_details=CompletionTokensDetails(accepted_prediction_tokens=None, audio_tokens=0, reasoning_tokens=0, rejected_prediction_tokens=None, text_tokens=None), prompt_tokens_details=PromptTokensDetails(audio_tokens=0, cache_write_tokens=None, cached_tokens=176, image_tokens=None, text_tokens=None)))
+</completion>
+</generation>
+
+</failed_attempts>
+
+<last_exception>
+    'NoneType' object has no attribute 'get'
+</last_exception>
