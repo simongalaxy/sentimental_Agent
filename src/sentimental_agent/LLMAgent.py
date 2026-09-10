@@ -12,7 +12,7 @@ import textwrap
 
 from src.sentimental_agent.Settings import settings
 from src.sentimental_agent.logger import Logger
-from src.sentimental_agent.DataClasses import ClassifiedView, DataProfile
+from src.sentimental_agent.DataClasses import ClassifiedView, DataProfile, Category
 
 class LLMAgent:
     def __init__(self, logger: Logger):
@@ -48,7 +48,7 @@ class LLMAgent:
         os.makedirs(self.report_path, exist_ok=True)
     
     
-    def _format_articles(self, rows: List[Dict]) -> str:
+    def _format_views(self, rows: List[Dict]) -> str:
         """Turn DB rows into a readable block for the LLM."""
         parts = []
         for r in rows:
@@ -59,6 +59,13 @@ class LLMAgent:
                 "-----"
             )
         return "\n\n".join(parts)
+
+
+    def _consolidated_views(self, views: List[str]) -> str:
+        parts = []
+        for view in views:
+            parts.append(f"- {view}")
+        return "\n".join(parts)
     
     
     def _write_report(self, markdown: str) -> str:
@@ -90,135 +97,209 @@ class LLMAgent:
             raise e
     
 
-    async def generate_category(self, original_query: str) -> List[str]:
+    # async def generate_category(self, filtered_views: List[str]) -> List[str]:
+    #     self.logger.info("Start consolidating categories from views.")
+        
+    #     system_instruction = """
+    #     You are a precise data categorization assistant. 
+    #     Analyze the provided list of views and generate a flat list of distinct high-level category names that group them logically.
+    #     Do not create nested objects. Output ONLY the categories.
+    #     """
+
+    #     user_prompt = f"""
+    #     Categorize the following views into distinct category names.
+
+    #     Views to process:
+    #     {filtered_views}
+    #     """
+
+    #     # 乾淨地呼叫抽離後的非同步方法
+    #     response = await self._call_llm(
+    #         model=self.model_name,
+    #         messages=[
+    #             { "role": "system", "content": system_instruction },
+    #             { "role": "user", "content": user_prompt }
+    #         ],
+    #         response_model=Category,
+    #         temperature=0.0,
+    #         timeout=15.0,
+    #         max_retries=3
+    #     )
+    #     self.logger.info(f"Category generated: \n%s", pformat(response.model_dump(by_alias=True), indent=2))
+        
+    #     return response.category
+
+    async def generate_category(self, filtered_views: List[str]) -> List[str]:
+        self.logger.info("Start consolidating categories from views.")
+        
+        # 💡 FIX 1: Explicitly instruct the LLM on the JSON key it MUST use
+        system_instruction = """
+        You are a precise data categorization assistant. 
+        Analyze the provided list of views and determine a list of high-level category names to group them logically.
+        
+        CRITICAL: You must return a JSON object with a single key named "category" containing a flat list of strings.
+        Example Format:
+        {
+        "category": ["Category A", "Category B", "Category C"]
+        }
+        """
+
+        user_prompt = f"""
+        Categorize the following views into distinct category names.
+
+        Views to process:
+        {filtered_views}
+        """
+
+        try:
+            # Call LLM with the structured schema wrapper
+            category_data = await self._call_llm(
+                model=self.model_name,
+                messages=[
+                    { "role": "system", "content": system_instruction },
+                    { "role": "user", "content": user_prompt }
+                ],
+                response_model=Category, # Enforces mapping validation
+                temperature=0.0,
+                timeout=15.0,
+                max_retries=3
+            )
+            
+            self.logger.info(f"Category schema successfully generated: \n%s", 
+                            pformat(category_data.model_dump(by_alias=True), indent=2))
+            
+            # 💡 FIX 2: Safely extract and return the internal list of strings 
+            return category_data.category
+
+        except Exception as e:
+            self.logger.error(f"Failed to generate structured categories: {str(e)}")
+            # Provide a graceful fallback array to prevent application crashes
+            return ["General Feedback"]
+
+
+    async def categorize_views(self, view: str) -> dict[str]:
         self.logger.info("Start consolidating categories from views.")
         
         system_instruction = """
-        You are a precise data extraction assistant. Your job is to extract search parameters, timeframes, organizations, and intended actions from the user's request."""
+        You are a precise view analyst. Your job is to identify the sentiment and category of the view."""
 
         user_prompt = f"""
-        Extract the following keys from User Query:
-        - "start_date": The beginning of the date range (format: YYYY-MM-DD). If no year is specified, assume the current or contextually appropriate year. If not mentioned, output null.
-        - "end_date": The end of the date range (format: YYYY-MM-DD). If not mentioned, output null.
-        - "departments": The exact name of the government department, agency, or organization mentioned. If not mentioned, output null.
-        - "keywords": A list of key topics, subjects, or phrases to look for, not including the exact name of the government department, agency, or organization mentioned.
-        - "actions": A list of specific operations or tasks requested by the user (e.g., 'scrape', 'summarize', 'download').
+        Identify the sentiment and category of the following view.
 
-        Strictly return ONLY the raw JSON object. Do not include markdown formatting, code blocks, or conversational filler.
-
-        ---
-        User Query: "{original_query}"
+        View:
+        {view}
 
         """
 
         # 乾淨地呼叫抽離後的非同步方法
-        parsed_query = await self._call_llm(
+        classifedview = await self._call_llm(
             model=self.model_name,
             messages=[
                 { "role": "system", "content": system_instruction },
                 { "role": "user", "content": user_prompt }
             ],
-            response_model=ParsedQuery,
+            response_model=ClassifedView,
+            temperature=0.0,
             timeout=15.0,
             max_retries=3
         )
-        self.logger.info(f"Parsed Query: \n%s", pformat(parsed_query.model_dump(by_alias=True), indent=2))
+        self.logger.info(f"Classified view generated: \n%s", pformat(classifiedview.model_dump(by_alias=True), indent=2))
         
-        return parsed_query
+        return c
 
 
-    async def generate_summary(self, search_results: List[dict]) -> None:
-        self.logger.info("Start generating summary from search results.")
+    # async def generate_summary(self, search_results: List[dict]) -> None:
+    #     self.logger.info("Start generating summary from search results.")
         
-        # prepare the documents from search results in pgvector.
-        articles = self._format_articles(rows=search_results)
+    #     # prepare the documents from search results in pgvector.
+    #     articles = self._format_articles(rows=search_results)
 
-        system_prompt = """
-        You are an expert Media Analyst and Policy Researcher. Your task is to synthesize unstructured media coverage and news articles into a structured, highly organized media summary report.
+    #     system_prompt = """
+    #     You are an expert Media Analyst and Policy Researcher. Your task is to synthesize unstructured media coverage and news articles into a structured, highly organized media summary report.
 
-        You must strictly organize the output using the following hierarchical structure:
-        1. Department
-        2. Topic
+    #     You must strictly organize the output using the following hierarchical structure:
+    #     1. Department
+    #     2. Topic
 
-        For EACH individual topic, you must format the content in this exact order:
-        - **Background Paragraph(s)**: Provide the baseline context, foundational facts, and initial trigger for the topic.
-        - **Chronological History**: Present a timeline or sequence of events detailing how the topic evolved over time. Ensure dates or timeframes are explicitly noted.
-        - **Government Stand**: A concise summary of the official government position, policy statements, or actions regarding this topic.
-        - **Opposite Views**: A summary of criticism, public backlash, opposition party statements, or alternative viewpoints.
+    #     For EACH individual topic, you must format the content in this exact order:
+    #     - **Background Paragraph(s)**: Provide the baseline context, foundational facts, and initial trigger for the topic.
+    #     - **Chronological History**: Present a timeline or sequence of events detailing how the topic evolved over time. Ensure dates or timeframes are explicitly noted.
+    #     - **Government Stand**: A concise summary of the official government position, policy statements, or actions regarding this topic.
+    #     - **Opposite Views**: A summary of criticism, public backlash, opposition party statements, or alternative viewpoints.
 
-        CRITICAL CONSTRAINTS:
-        - Do not mix the Government Stand and Opposite Views into the chronological history; they must remain at the very end of each topic section.
-        - Maintain a neutral, analytical tone.
-        - Do not add conversational fluff or introductory meta-commentary (e.g., "Sure, here is your summary"). Start directly with the first department.
-        """
+    #     CRITICAL CONSTRAINTS:
+    #     - Do not mix the Government Stand and Opposite Views into the chronological history; they must remain at the very end of each topic section.
+    #     - Maintain a neutral, analytical tone.
+    #     - Do not add conversational fluff or introductory meta-commentary (e.g., "Sure, here is your summary"). Start directly with the first department.
+    #     """
 
-        user_prompt = f"""
-        Please analyze the following raw media reports and generate a structured media summary according to your system instructions with the following requirements:
+    #     user_prompt = f"""
+    #     Please analyze the following raw media reports and generate a structured media summary according to your system instructions with the following requirements:
 
-        1. **Content Guidelines**:
-        - Cover all significant points from the provided articles.
-        - Be detailed and comprehensive rather than brief; do not omit important information just to keep it short.
-        - Include key facts, figures, exact dates, names of officials/agencies, and outcomes.
-        - Show the progression and evolution of the issue over time within its specific section.
+    #     1. **Content Guidelines**:
+    #     - Cover all significant points from the provided articles.
+    #     - Be detailed and comprehensive rather than brief; do not omit important information just to keep it short.
+    #     - Include key facts, figures, exact dates, names of officials/agencies, and outcomes.
+    #     - Show the progression and evolution of the issue over time within its specific section.
 
-        2. **Structure & Style**:
-        - Group the summaries strictly by Department, then by Topic.
-        - For each Topic, organize the history chronologically (nested inside that topic).
-        - Ensure each Topic ends with distinct sections for the Government Stand and Opposite Views.
-        - Maintain a formal, objective, and professional tone.
-        - Use clear paragraphs. Use bullet points *only* for lists of actions or key chronological events when appropriate.
+    #     2. **Structure & Style**:
+    #     - Group the summaries strictly by Department, then by Topic.
+    #     - For each Topic, organize the history chronologically (nested inside that topic).
+    #     - Ensure each Topic ends with distinct sections for the Government Stand and Opposite Views.
+    #     - Maintain a formal, objective, and professional tone.
+    #     - Use clear paragraphs. Use bullet points *only* for lists of actions or key chronological events when appropriate.
 
-        ### Articles:
-        {articles}
-        """
+    #     ### Articles:
+    #     {articles}
+    #     """
 
 
-        # user_prompt = f"""Below are the full texts of multiple government news articles related to the query.
+    #     # user_prompt = f"""Below are the full texts of multiple government news articles related to the query.
 
-        # Articles:
-        # {articles}
+    #     # Articles:
+    #     # {articles}
 
-        # Please create a comprehensive **Media Summary Report** with the following requirements:
+    #     # Please create a comprehensive **Media Summary Report** with the following requirements:
 
-        # 1. **Structure**:
-        # - Start with a short executive overview (2-4 sentences).
-        # - Then organize the main body in strict chronological order (earliest events first).
-        # - Use clear markdown headings and sub-headings (## Date or ## Topic).
-        # - Group related developments when logical, but never break chronology.
+    #     # 1. **Structure**:
+    #     # - Start with a short executive overview (2-4 sentences).
+    #     # - Then organize the main body in strict chronological order (earliest events first).
+    #     # - Use clear markdown headings and sub-headings (## Date or ## Topic).
+    #     # - Group related developments when logical, but never break chronology.
 
-        # 2. **Content Guidelines**:
-        # - Cover all significant points from the provided articles.
-        # - Be detailed and comprehensive rather than brief.
-        # - Include key facts, figures, dates, names of officials/agencies, and outcomes.
-        # - Show progression and evolution of the issue over time.
-        # - If multiple departments or topics are involved, create logical sections while keeping the overall timeline intact.
+    #     # 2. **Content Guidelines**:
+    #     # - Cover all significant points from the provided articles.
+    #     # - Be detailed and comprehensive rather than brief.
+    #     # - Include key facts, figures, dates, names of officials/agencies, and outcomes.
+    #     # - Show progression and evolution of the issue over time.
+    #     # - If multiple departments or topics are involved, create logical sections while keeping the overall timeline intact.
 
-        # 3. **Style**:
-        # - Formal, objective, and professional tone.
-        # - Clear paragraphs. Use bullet points only for lists of actions or key outcomes when appropriate.
-        # - Do not omit important information just to keep it short.
+    #     # 3. **Style**:
+    #     # - Formal, objective, and professional tone.
+    #     # - Clear paragraphs. Use bullet points only for lists of actions or key outcomes when appropriate.
+    #     # - Do not omit important information just to keep it short.
 
-        # Write the complete report now."""
+    #     # Write the complete report now."""
 
-        try:
-            # ⚡️ FIX: Bypass instructor processing entirely for raw text extraction
-            # We access the raw async client via .client attribute underneath instructor
-            response = await self.client.client.chat.completions.create(
-                model=self.model_name,
-                messages=[
-                    { "role": "system", "content": system_prompt },
-                    { "role": "user", "content": user_prompt }
-                ],
-                timeout=30.0  # Reports can take slightly longer to stream
-            )
-            summary = response.choices[0].message.content
-            self._write_report(markdown=summary)
-            self.logger.info("#"*50)
-            self.logger.info(f"Generated Summary: \n%s", summary)
-            self.logger.info("#"*50)
+    #     try:
+    #         # ⚡️ FIX: Bypass instructor processing entirely for raw text extraction
+    #         # We access the raw async client via .client attribute underneath instructor
+    #         response = await self.client.client.chat.completions.create(
+    #             model=self.model_name,
+    #             messages=[
+    #                 { "role": "system", "content": system_prompt },
+    #                 { "role": "user", "content": user_prompt }
+    #             ],
+    #             timeout=30.0  # Reports can take slightly longer to stream
+    #         )
+    #         summary = response.choices[0].message.content
+    #         self._write_report(markdown=summary)
+    #         self.logger.info("#"*50)
+    #         self.logger.info(f"Generated Summary: \n%s", summary)
+    #         self.logger.info("#"*50)
 
-        except Exception as e:
-            self.logger.error(f"Unstructured summary generation failed: {e}")
-            raise e
+    #     except Exception as e:
+    #         self.logger.error(f"Unstructured summary generation failed: {e}")
+    #         raise e
 
-        return
+    #     return
