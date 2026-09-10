@@ -4,7 +4,9 @@ import pandas as pd
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, ValidationInfo, AfterValidator
 from typing_extensions import Annotated
 
-
+class Category(BaseModel):
+    category: List[str]
+    
 class DataProfile(BaseModel):
     # This configuration tells Pydantic it's okay to accept complex types like DataFrames
     model_config = ConfigDict(arbitrary_types_allowed=True)

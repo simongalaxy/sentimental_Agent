@@ -2,6 +2,7 @@ import os
 import json
 import asyncio
 import instructor
+import pandas as pd
 from datetime import datetime
 from openai import AsyncOpenAI
 from pprint import pformat
@@ -48,17 +49,14 @@ class LLMAgent:
         os.makedirs(self.report_path, exist_ok=True)
     
     
-    def _format_views(self, rows: List[Dict]) -> str:
-        """Turn DB rows into a readable block for the LLM."""
-        parts = []
-        for r in rows:
-            parts.append(
-                f"Date: {r.get('published_date')}\n"
-                f"Title: {r.get('title')}\n"
-                f"Content:\n{r.get('content')}\n"
-                "-----"
-            )
-        return "\n\n".join(parts)
+    # def _format_views(self, data: dict) -> str:
+        
+    #     parts.append(
+    #         f"Review_ID": {r.get('published_date')}\n"
+    #         f"Review_Text: {r.get('title')}\n"
+    #         "-----"
+    #     )
+    #     return "\n\n".join(parts)
 
 
     def _consolidated_views(self, views: List[str]) -> str:
@@ -96,38 +94,6 @@ class LLMAgent:
             self.logger.error(f"LLM API call failed [Model: {model}]: {e}")
             raise e
     
-
-    # async def generate_category(self, filtered_views: List[str]) -> List[str]:
-    #     self.logger.info("Start consolidating categories from views.")
-        
-    #     system_instruction = """
-    #     You are a precise data categorization assistant. 
-    #     Analyze the provided list of views and generate a flat list of distinct high-level category names that group them logically.
-    #     Do not create nested objects. Output ONLY the categories.
-    #     """
-
-    #     user_prompt = f"""
-    #     Categorize the following views into distinct category names.
-
-    #     Views to process:
-    #     {filtered_views}
-    #     """
-
-    #     # 乾淨地呼叫抽離後的非同步方法
-    #     response = await self._call_llm(
-    #         model=self.model_name,
-    #         messages=[
-    #             { "role": "system", "content": system_instruction },
-    #             { "role": "user", "content": user_prompt }
-    #         ],
-    #         response_model=Category,
-    #         temperature=0.0,
-    #         timeout=15.0,
-    #         max_retries=3
-    #     )
-    #     self.logger.info(f"Category generated: \n%s", pformat(response.model_dump(by_alias=True), indent=2))
-        
-    #     return response.category
 
     async def generate_category(self, filtered_views: List[str]) -> List[str]:
         self.logger.info("Start consolidating categories from views.")
@@ -177,8 +143,10 @@ class LLMAgent:
             return ["General Feedback"]
 
 
-    async def categorize_views(self, view: str) -> dict[str]:
+    async def categorize_views(self, view: dict) -> dict[str]:
         self.logger.info("Start consolidating categories from views.")
+
+
         
         system_instruction = """
         You are a precise view analyst. Your job is to identify the sentiment and category of the view."""
