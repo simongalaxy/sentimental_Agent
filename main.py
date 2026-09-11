@@ -26,10 +26,10 @@ async def main():
         # generate Catagories for each product/service.
         dataprofile.filtered_views = get_top_and_low_views_from_df(df=dataprofile.filtered_df, items=20)
         logger.info(f"Processed platform-product: {dataprofile.platform}-{dataprofile.product} with {len(dataprofile.filtered_views)} filtered views.")
-        dataprofile.category = await agent.generate_category(filtered_views=dataprofile.filtered_views)
+        dataprofile.category = await agent.generate_category(dataprofile=dataprofile)
 
         # categorize and assign sentimental for each views.
-        dataprofile.processed_df = await agent.categorize_all_views(df=dataprofile.filtered_df, category=dataprofile.category)
+        dataprofile.processed_df = await agent.categorize_all_views(dataprofile=dataprofile)
 
 
 

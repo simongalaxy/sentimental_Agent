@@ -49,12 +49,18 @@ class LLMAgent:
         os.makedirs(self.report_path, exist_ok=True)
 
 
-    def _consolidated_views(self, views: List[str]) -> str:
+    def _consolidated_views(self, dataprofile: DataProfile) -> str:
+        
         parts = []
-        for view in views:
+        for view in dataprofile.filtered_views:
             parts.append(f"- {view}")
-        return "\n".join(parts)
-    
+        filtered_views ="\n".join(parts)
+        consolidated_views = f"Product: {dataprofile.product}\n\nfiltered_views: {filtered_views}\n"
+
+        self.logger.info(f"Consolidated views: \n%s", consolidated_views)
+        
+        return consolidated_views
+
     
     def _write_report(self, markdown: str) -> str:
         """Write the generated markdown report to a text file with a timestamped filename, and return the filename."""
@@ -85,9 +91,11 @@ class LLMAgent:
             raise e
     
 
-    async def generate_category(self, filtered_views: List[str]) -> List[str]:
+    async def generate_category(self, dataprofile: DataProfile) -> list[str]:
         self.logger.info("Start consolidating categories from views.")
         
+        filtered_views = self._consolidated_views(dataprofile=dataprofile)
+
         # 💡 FIX 1: Explicitly instruct the LLM on the JSON key it MUST use
         system_instruction = """
         You are a precise data categorization assistant. 
@@ -128,20 +136,20 @@ class LLMAgent:
             return category_data.category
 
         except Exception as e:
-            self.logger.error(f"Failed to generate structured categories: {str(e)}")
+            self.logger.error(f"Failed to generate structured category: {str(e)}")
             # Provide a graceful fallback array to prevent application crashes
             return ["General Feedback"]
 
 
     async def _categorize_views(self, data: dict, category: List[str]) -> dict[str]:
-        self.logger.info("Start consolidating categories from views.")
+        self.logger.info("Start consolidating category from views.")
 
-        view = data.get('Review_Text')
+        view = f"Product: {data.get('Product/Location_Name')}\n\nView: {data.get('Review_Text')}\n"
         
         system_instruction = """
         You are a precise view analyst. Your job is to identify the sentiment and category of the view.
-        CRITICAL: You must provide your 'categories' output as a strict JSON array of strings (e.g. ["CategoryName"]), even if there is only one category.
-        Only classify into categories provided in the context.
+        CRITICAL: You must provide your 'category' output as a strict JSON array of strings (e.g. ["CategoryName"]), even if there is only one category.
+        Only classify into category provided in the context.
         """
 
         user_prompt = f"""
@@ -189,26 +197,26 @@ class LLMAgent:
         return data
 
 
-    async def categorize_all_views(self, df: pd.DataFrame, category: List[str]) -> pd.DataFrame:
+    async def categorize_all_views(self, dataprofile: DataProfile) -> None:
 
-        semaphore = asyncio.Semaphore(4)   # Tune this (3~6) based on your GPU/RAM
+        semaphore = asyncio.Semaphore(6)   # Tune this (3~6) based on your GPU/RAM
 
         async def bounded_extract(data: dict):
             async with semaphore:
-                return await self._categorize_views(data=data, category=category)
+                return await self._categorize_views(data=data, category=dataprofile.category)
 
-        tasks = [bounded_extract(data) for data in df.to_dict(orient="records")]
+        tasks = [bounded_extract(data) for data in dataprofile.filtered_df.to_dict(orient="records")]
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         # Filter out or handle exceptions if an execution failed
         valid_results = [r for r in results if isinstance(r, dict)]
 
-        processed_df = pd.DataFrame(results)
+        dataprofile.processed_df = pd.DataFrame(results)
 
-        self.logger.info(f"Processed dataframe: \n%s", processed_df.head(20))
+        self.logger.info(f"Processed dataframe: \n%s", dataprofile.processed_df.head(20))
         self.logger.info("#" * 50)
 
-        return processed_df
+        return
 
 
     # async def generate_summary(self, search_results: List[dict]) -> None:

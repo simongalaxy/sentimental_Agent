@@ -22,7 +22,7 @@ class DataProfile(BaseModel):
 ### ClassifiedView
 def validate_category(values: List[str], info: ValidationInfo) -> List[str]:
         # Extract the allowed categories from the validation context
-        allowed_categories = info.context.get("allowed_category", [])
+        allowed_category = info.context.get("allowed_category", [])
 
         # Check if any item in the input list is not in the allowed categories
         invalid_items = [item for item in values if item not in allowed_category]
@@ -36,7 +36,7 @@ def validate_category(values: List[str], info: ValidationInfo) -> List[str]:
 class ClassifiedView(BaseModel):
     sentiment: Literal["Positive", "Neutral", "Negative"] = Field(description="Sentiment of the views. It can only be either Positive, Neutral, or Negative.")
     # Annotate the field with our dynamic validator
-    categories: Annotated[List[str], AfterValidator(validate_category)]
+    category: Annotated[List[str], AfterValidator(validate_category)]
 
     
 
