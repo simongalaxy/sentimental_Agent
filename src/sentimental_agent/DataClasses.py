@@ -15,29 +15,30 @@ class DataProfile(BaseModel):
     product: str
     filtered_df: Optional[pd.DataFrame] = None
     filtered_views: Optional[List[str]] = None
-    categories: Optional[List[str]] = None
+    category: Optional[List[str]] = None
     processed_df: Optional[pd.DataFrame] = None
 
 
 ### ClassifiedView
-def validate_categories(values: List[str], info: ValidationInfo) -> List[str]:
-    # Extract the allowed categories from the validation context
-    allowed_categories = info.context.get("allowed_categories", [])
+def validate_category(values: List[str], info: ValidationInfo) -> List[str]:
+        # Extract the allowed categories from the validation context
+        allowed_categories = info.context.get("allowed_category", [])
 
-    # Check if any item in the input list is not in the allowed categories
-    invalid_items = [item for item in values if item not in allowed_categories]
-    if invalid_items:
-        raise ValueError(
-            f"Invalid categories: {invalid_items}. Allowed: {allowed_categories}"
-        )
+        # Check if any item in the input list is not in the allowed categories
+        invalid_items = [item for item in values if item not in allowed_category]
+        if invalid_items:
+            raise ValueError(
+                f"Invalid category items: {invalid_items}. Allowed: {allowed_category}"
+            )
 
-    return values
+        return values
 
 class ClassifiedView(BaseModel):
-    sentimental: Literal["Positive", "Neutral", "Negative"] = Field("Sentimental of the views. It can only either be Positive, Neutral or Negative.")
-     # Annotate the field with our dynamic validator
-    categories: Annotated[List[str], AfterValidator(validate_categories)]
+    sentiment: Literal["Positive", "Neutral", "Negative"] = Field(description="Sentiment of the views. It can only be either Positive, Neutral, or Negative.")
+    # Annotate the field with our dynamic validator
+    categories: Annotated[List[str], AfterValidator(validate_category)]
 
+    
 
 # # --- How to use it at runtime ---
 

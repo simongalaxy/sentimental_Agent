@@ -133,52 +133,83 @@ class LLMAgent:
             return ["General Feedback"]
 
 
-    async def _categorize_views(self, data: dict) -> dict[str]:
+    async def _categorize_views(self, data: dict, category: List[str]) -> dict[str]:
         self.logger.info("Start consolidating categories from views.")
 
         view = data.get('Review_Text')
         
         system_instruction = """
-        You are a precise view analyst. Your job is to identify the sentiment and category of the view."""
+        You are a precise view analyst. Your job is to identify the sentiment and category of the view.
+        CRITICAL: You must provide your 'categories' output as a strict JSON array of strings (e.g. ["CategoryName"]), even if there is only one category.
+        Only classify into categories provided in the context.
+        """
 
         user_prompt = f"""
         Identify the sentiment and category of the following view.
 
+        Available Category: 
+        {category}
+
         View:
         {view}
-
         """
 
-        # 乾淨地呼叫抽離後的非同步方法
-        response = await self._call_llm(
-            model=self.model_name,
-            messages=[
-                { "role": "system", "content": system_instruction },
-                { "role": "user", "content": user_prompt }
-            ],
-            response_model=ClassifiedView,
-            temperature=0.0,
-            timeout=15.0,
-            max_retries=3
-        )
-        self.logger.info(f"Classified view generated: \n%s", pformat(response.model_dump(by_alias=True), indent=2))
-        data["sentimental"] = response.sentimental
-        data['category'] = response.categories
+        try:
+            # 乾淨地呼叫抽離後的非同步方法
+            response = await self._call_llm(
+                model=self.model_name,
+                messages=[
+                    { "role": "system", "content": system_instruction },
+                    { "role": "user", "content": user_prompt }
+                ],
+                response_model=ClassifiedView,
+                context={"allowed_category": category},
+                temperature=0.0,
+                timeout=15.0,
+                max_retries=3
+            )
+
+            if response is not None:
+                self.logger.info(f"Classified view generated: \n%s", pformat(response.model_dump(by_alias=True), indent=2))
+                data["sentiment"] = response.sentiment
+                data['category'] = response.category
+            else:
+                data["sentiment"] = "Neutral"
+                data['category'] = []
+                self.logger.error("LLM returned None response.")
+
+        except Exception as e:
+            self.logger.error(f"Failed to process view due to error: {e}")
+            data["sentiment"] = "Neutral"
+            data['category'] = []
+
+        self.logger.info(f"Processed view: \n%s", pformat(data, indent=2))
+        self.logger.info("#" * 50)
 
         return data
 
-    async def categorize_all_views(self, df: pd.DataFrame, categories: List[str]) -> pd.DataFrame:
 
-        
-        tasks = [self._categorize_views(data=data) for data in df.to_dict(orient="records")]
-        results = await asyncio.gather(*tasks)
+    async def categorize_all_views(self, df: pd.DataFrame, category: List[str]) -> pd.DataFrame:
 
-        return pd.DataFrame(results)
+        semaphore = asyncio.Semaphore(4)   # Tune this (3~6) based on your GPU/RAM
 
+        async def bounded_extract(data: dict):
+            async with semaphore:
+                return await self._categorize_views(data=data, category=category)
 
+        tasks = [bounded_extract(data) for data in df.to_dict(orient="records")]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
 
+        # Filter out or handle exceptions if an execution failed
+        valid_results = [r for r in results if isinstance(r, dict)]
 
-        
+        processed_df = pd.DataFrame(results)
+
+        self.logger.info(f"Processed dataframe: \n%s", processed_df.head(20))
+        self.logger.info("#" * 50)
+
+        return processed_df
+
 
     # async def generate_summary(self, search_results: List[dict]) -> None:
     #     self.logger.info("Start generating summary from search results.")

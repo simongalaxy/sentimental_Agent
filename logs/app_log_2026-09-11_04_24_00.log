@@ -1,0 +1,16 @@
+2026-09-11 04:24:00 - __main__ - INFO - Class Logger initiated.
+2026-09-11 04:24:00 - __main__ - INFO - Data loaded from amazon_google_reviews.csv with shape: (6200, 7)
+2026-09-11 04:24:01 - __main__ - INFO - Number of unique platform-product combinations found: 25
+2026-09-11 04:24:01 - __main__ - INFO - Processed platform-product: Google Locations-Metropolitan Dental Health Clinic with 60 filtered views.
+2026-09-11 04:24:01 - __main__ - INFO - Start consolidating categories from views.
+2026-09-11 04:24:05 - httpx2 - INFO - HTTP Request: POST https://ollama.com/v1/chat/completions "HTTP/1.1 200 OK"
+2026-09-11 04:24:05 - __main__ - INFO - Category schema successfully generated: 
+{ 'category': [ 'Healthcare',
+                'Automotive',
+                'Hospitality',
+                'Restaurant',
+                'Coffee Shop',
+                'Park & Garden',
+                'Positive Feedback',
+                'Negative Feedback',
+                'Neutral Feedback']}
