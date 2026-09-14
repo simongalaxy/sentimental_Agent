@@ -48,20 +48,7 @@ class LLMAgent:
     def _create_folder(self):
         os.makedirs(self.report_path, exist_ok=True)
 
-
-    def _consolidated_views(self, dataprofile: DataProfile) -> str:
-        
-        parts = []
-        for view in dataprofile.filtered_views:
-            parts.append(f"- {view}")
-        filtered_views ="\n".join(parts)
-        consolidated_views = f"Product: {dataprofile.product}\n\nfiltered_views: {filtered_views}\n"
-
-        self.logger.info(f"Consolidated views: \n%s", consolidated_views)
-        
-        return consolidated_views
-
-    
+ 
     def _write_report(self, markdown: str) -> str:
         """Write the generated markdown report to a text file with a timestamped filename, and return the filename."""
         
@@ -89,12 +76,24 @@ class LLMAgent:
         except Exception as e:
             self.logger.error(f"LLM API call failed [Model: {model}]: {e}")
             raise e
-    
+
+
+    def _consolidated_views(self, dataprofile: DataProfile) -> str:
+        
+        parts = []
+        for view in dataprofile.sample_views:
+            parts.append(f"- {view}")
+        sample_views_str ="\n".join(parts)
+        consolidated_sample_views = f"Product: {dataprofile.product}\n\nfiltered_views: {sample_views_str}\n"
+        # self.logger.info(f"Consolidated sample views: \n%s", consolidated_sample_views)
+        
+        return consolidated_sample_views
+
 
     async def generate_category(self, dataprofile: DataProfile) -> list[str]:
         self.logger.info("Start consolidating categories from views.")
         
-        filtered_views = self._consolidated_views(dataprofile=dataprofile)
+        consolidated_sample_views = self._consolidated_views(dataprofile=dataprofile)
 
         # 💡 FIX 1: Explicitly instruct the LLM on the JSON key it MUST use
         system_instruction = """
@@ -115,7 +114,7 @@ class LLMAgent:
         Categorize the following views into distinct category names.
 
         Views to process:
-        {filtered_views}
+        {consolidated_sample_views}
         """
 
         try:
@@ -209,7 +208,7 @@ class LLMAgent:
             async with semaphore:
                 return await self._categorize_views(data=data, category=dataprofile.category)
 
-        tasks = [bounded_extract(data) for data in dataprofile.filtered_df.to_dict(orient="records")]
+        tasks = [bounded_extract(data) for data in dataprofile.unique_views.to_dict(orient="records")]
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         # Filter out or handle exceptions if an execution failed

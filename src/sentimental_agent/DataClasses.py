@@ -14,6 +14,8 @@ class DataProfile(BaseModel):
     platform: str
     product: str
     filtered_df: Optional[pd.DataFrame] = None
+    sample_views: Optional[List[str]] = None
+    unique_views: Optional[pd.DataFrame] = None
     filtered_views: Optional[List[str]] = None
     category: Optional[List[str]] = None
     processed_df: Optional[pd.DataFrame] = None
