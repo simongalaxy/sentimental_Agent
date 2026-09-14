@@ -36,27 +36,3 @@ class ClassifiedView(BaseModel):
     # Annotate the field with our dynamic validator
     category: Annotated[str, AfterValidator(validate_category)]
 
-    
-
-# # --- How to use it at runtime ---
-
-# # 1. Define your dynamic list of allowed categories
-# current_categories = ["electronics", "clothing", "home"]
-
-# # 2. Pass the list inside the `context` dictionary during validation
-# try:
-#     # This will PASS
-#     valid_item = ItemClassifier.model_validate(
-#         {"name": "Laptop", "categories": ["electronics", "home"]},
-#         context={"allowed_categories": current_categories},
-#     )
-#     print("Success:", valid_item)
-
-#     # This will FAIL because "food" is not in our dynamic list
-#     invalid_item = ItemClassifier.model_validate(
-#         {"name": "Apple", "categories": ["food", "electronics"]},
-#         context={"allowed_categories": current_categories},
-#     )
-# except ValidationError as e:
-#     print("\nValidation Error caught successfully:")
-#     print(e)

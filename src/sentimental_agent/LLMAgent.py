@@ -101,7 +101,10 @@ class LLMAgent:
         You are a precise data categorization assistant. 
         Analyze the provided list of views and determine a list of high-level category names to group them logically.
         
-        CRITICAL: You must return a JSON object with a single key named "category" containing a flat list of strings.
+        CRITICAL: 
+        1. You must return a JSON object with a single key named "category" containing a flat list of strings.
+        2. DO NOT include "Positive", "Negative", or any general sentiment indicators as a category.
+        
         Example Format:
         {
         "category": ["Category A", "Category B", "Category C"]
@@ -148,8 +151,9 @@ class LLMAgent:
         
         system_instruction = """
         You are a precise view analyst. Your job is to identify the sentiment and category of the view.
-        CRITICAL: You must provide your 'category' output as a strict JSON array of strings (e.g. ["CategoryName"]), even if there is only one category.
-        Only classify into category provided in the context.
+        CRITICAL: 
+        1. You must provide your 'category' output as a strict JSON array of strings (e.g. ["CategoryName"]), even if there is only one category.
+        2. Only classify into category provided in the context. 
         """
 
         user_prompt = f"""
@@ -178,7 +182,7 @@ class LLMAgent:
             )
 
             if response is not None:
-                self.logger.info(f"Classified view generated: \n%s", pformat(response.model_dump(by_alias=True), indent=2))
+                # self.logger.info(f"Classified view generated: \n%s", pformat(response.model_dump(by_alias=True), indent=2))
                 data["sentiment"] = response.sentiment
                 data['category'] = response.category
             else:
@@ -199,7 +203,7 @@ class LLMAgent:
 
     async def categorize_all_views(self, dataprofile: DataProfile) -> None:
 
-        semaphore = asyncio.Semaphore(6)   # Tune this (3~6) based on your GPU/RAM
+        semaphore = asyncio.Semaphore(3)   # Tune this (3~6) based on your GPU/RAM
 
         async def bounded_extract(data: dict):
             async with semaphore:
