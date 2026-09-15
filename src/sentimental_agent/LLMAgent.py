@@ -6,7 +6,7 @@ import pandas as pd
 from datetime import datetime
 from openai import AsyncOpenAI
 from pprint import pformat
-from typing import List, Any, Dict
+from typing import List, Any, Dict, AsyncGenerator
 from pathlib import Path
 import textwrap
 
@@ -200,7 +200,7 @@ class LLMAgent:
         return data
 
 
-    async def categorize_all_views(self, dataprofile: DataProfile) -> None:
+    async def categorize_all_views(self, dataprofile: DataProfile) -> AsyncGenerator[List[dict[str]]]:
 
         semaphore = asyncio.Semaphore(3)   # Tune this (3~6) based on your GPU/RAM
 
@@ -214,12 +214,12 @@ class LLMAgent:
         # Filter out or handle exceptions if an execution failed
         valid_results = [r for r in results if isinstance(r, dict)]
 
-        dataprofile.processed_df = pd.DataFrame(results)
+        # dataprofile.processed_df = pd.DataFrame(results)
 
-        self.logger.info(f"Processed dataframe: \n%s", dataprofile.processed_df.head(20))
-        self.logger.info("#" * 50)
+        # self.logger.info(f"Processed dataframe: \n%s", dataprofile.processed_df.head(20))
+        # self.logger.info("#" * 50)
 
-        return
+        yield valid_results
 
 
     # async def generate_summary(self, search_results: List[dict]) -> None:
