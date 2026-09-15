@@ -200,7 +200,7 @@ class LLMAgent:
         return data
 
 
-    async def categorize_all_views(self, dataprofile: DataProfile) -> AsyncGenerator[List[dict[str]]]:
+    async def categorize_all_views(self, dataprofile: DataProfile) -> AsyncGenerator[List[dict[str, Any]]]:
 
         semaphore = asyncio.Semaphore(3)   # Tune this (3~6) based on your GPU/RAM
 
@@ -208,18 +208,27 @@ class LLMAgent:
             async with semaphore:
                 return await self._categorize_views(data=data, category=dataprofile.category)
 
-        tasks = [bounded_extract(data) for data in dataprofile.unique_views.to_dict(orient="records")]
-        results = await asyncio.gather(*tasks, return_exceptions=True)
+        # tasks = [bounded_extract(data) for data in dataprofile.unique_views.to_dict(orient="records")]
+        # results = await asyncio.gather(*tasks)
 
-        # Filter out or handle exceptions if an execution failed
-        valid_results = [r for r in results if isinstance(r, dict)]
+         # Convert dataframe rows to records
+        batch_size = 10
+        records = dataprofile.unique_views.to_dict(orient="records")
 
-        # dataprofile.processed_df = pd.DataFrame(results)
+        # Loop through records and process them in specific chunk sizes
+        for i in range(0, len(records), batch_size):
+            batch_chunk = records[i : i + batch_size]
+            
+            # Schedule only the current batch tasks concurrently
+            tasks = [bounded_extract(data) for data in batch_chunk]
+            results = await asyncio.gather(*tasks)
 
-        # self.logger.info(f"Processed dataframe: \n%s", dataprofile.processed_df.head(20))
-        # self.logger.info("#" * 50)
-
-        yield valid_results
+            # Clean and extract valid dictionary results from this batch
+            valid_results = [r for r in results if isinstance(r, dict)]
+            
+            # Stream out the finished chunk immediately
+            if valid_results:
+                yield valid_results
 
 
     # async def generate_summary(self, search_results: List[dict]) -> None:
