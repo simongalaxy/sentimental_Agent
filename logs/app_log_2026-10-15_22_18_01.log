@@ -1,0 +1,12 @@
+2026-10-15 22:18:01 - __main__ - INFO - Class Logger initiated.
+2026-10-15 22:18:01 - __main__ - INFO - File path: ./data/original/amazon_google_reviews.csv
+2026-10-15 22:18:01 - __main__ - INFO - Data loaded successfully.
+2026-10-15 22:18:01 - __main__ - INFO - DataFrame shape: (6200, 7)
+2026-10-15 22:18:01 - __main__ - INFO - DataFrame preview:
+       Review_ID          Platform                   Product/Location_Name                                        Review_Text  Rating        Date  Helpful_Votes
+0  REV-GOO-00001  Google Locations       Metropolitan Dental Health Clinic  Terrible hygiene and filthy tables. Saw flies ...       1  13.10.2022              1
+1  REV-GOO-00002  Google Locations          Blue Bottle Artisan Coffee Bar  Incredible place to visit! Breathtaking flora,...       5  07.03.2022             30
+2  REV-AMA-00003            Amazon       Bedsure Cooling Bamboo Bed Sheets  Simply brilliant. I was skeptical at first, bu...       5  09.05.2024              3
+3  REV-GOO-00004  Google Locations                  Bella Italia Trattoria  Bought this recently. Outstanding service and ...       5  15.05.2024              2
+4  REV-AMA-00005            Amazon  Instant Pot Duo 7-in-1 Pressure Cooker  Honestly, absolute perfection! easily the best...       5  18.02.2024             32
+2026-10-15 22:18:01 - __main__ - INFO - ##################################################
