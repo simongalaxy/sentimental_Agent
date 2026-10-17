@@ -8,7 +8,8 @@ from src.sentimental_agent.DataProcessor.DataProcessor import (
     load_csv,
     get_df_by_platform_product
 )
-from src.sentimental_agent.Sentimental import SentimentalClassifer
+from src.sentimental_agent.Sentimental.SentimentalClassifier import SentimentalClassifier
+from src.sentimental_agent.Categorizer.ViewCategorizer import ViewCategorizer
 
 
 def main():
@@ -17,7 +18,8 @@ def main():
     """
     # initiate instance.
     logger = Logger(__name__).get_logger()
-    senti_classifer = SentimentalClassifer(logger=logger)
+    senti_classifer = SentimentalClassifier(logger=logger)
+    ViewCategorizer = ViewCategorizer(logger=logger)
 
     # load data source.
     source_filename = settings.source_filename

@@ -24,7 +24,8 @@ class Settings(BaseSettings):
     # HuggingFace settings.
     # 1. sentimental model.
     sentimental_model: str
-
+    categorizier_model: str
+    labeller_model: str
     
 
     # pydantic settings config.

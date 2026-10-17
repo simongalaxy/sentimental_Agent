@@ -6,7 +6,7 @@ from src.sentimental_agent.Utilities.Logger import Logger
 from src.sentimental_agent.Utilities.Settings import settings
 
 
-class SentimentalClassifier():
+class SentimentalClassifier:
     def __init__(self, logger: Logger):
         self.logger = logger
         self.model = settings.sentimental_model

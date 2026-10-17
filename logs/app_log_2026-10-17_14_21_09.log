@@ -1,0 +1,68 @@
+2026-10-17 14:21:09 - __main__ - INFO - Class Logger initiated.
+2026-10-17 14:21:09 - httpx2 - INFO - HTTP Request: GET https://huggingface.co/api/agent-harnesses "HTTP/1.1 200 OK"
+2026-10-17 14:21:09 - httpx2 - INFO - HTTP Request: GET https://huggingface.co/api/models/distilbert-base-uncased-finetuned-sst-2-english "HTTP/1.1 307 Temporary Redirect"
+2026-10-17 14:21:10 - httpx2 - INFO - HTTP Request: GET https://huggingface.co/api/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english "HTTP/1.1 200 OK"
+2026-10-17 14:21:10 - httpx2 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0fa89d2f80546fda750413ed43d93601a13/config.json "HTTP/1.1 200 OK"
+2026-10-17 14:21:10 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-10-17 14:21:10 - httpx2 - INFO - HTTP Request: GET https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0fa89d2f80546fda750413ed43d93601a13/config.json "HTTP/1.1 200 OK"
+2026-10-17 14:21:11 - httpx2 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0fa89d2f80546fda750413ed43d93601a13/model.safetensors "HTTP/1.1 302 Found"
+2026-10-17 14:21:11 - httpx2 - INFO - HTTP Request: GET https://huggingface.co/api/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english/xet-read-token/714eb0fa89d2f80546fda750413ed43d93601a13 "HTTP/1.1 200 OK"
+2026-10-17 14:21:40 - httpx2 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0fa89d2f80546fda750413ed43d93601a13/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-10-17 14:21:41 - httpx2 - INFO - HTTP Request: GET https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0fa89d2f80546fda750413ed43d93601a13/tokenizer_config.json "HTTP/1.1 200 OK"
+2026-10-17 14:21:41 - httpx2 - INFO - HTTP Request: GET https://huggingface.co/api/models/distilbert-base-uncased-finetuned-sst-2-english/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 307 Temporary Redirect"
+2026-10-17 14:21:41 - httpx2 - INFO - HTTP Request: GET https://huggingface.co/api/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+2026-10-17 14:21:42 - httpx2 - INFO - HTTP Request: GET https://huggingface.co/api/models/distilbert-base-uncased-finetuned-sst-2-english/tree/main?recursive=true&expand=false "HTTP/1.1 307 Temporary Redirect"
+2026-10-17 14:21:42 - httpx2 - INFO - HTTP Request: GET https://huggingface.co/api/models/distilbert/distilbert-base-uncased-finetuned-sst-2-english/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-10-17 14:21:42 - httpx2 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0fa89d2f80546fda750413ed43d93601a13/vocab.txt "HTTP/1.1 200 OK"
+2026-10-17 14:21:42 - httpx2 - INFO - HTTP Request: GET https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0fa89d2f80546fda750413ed43d93601a13/vocab.txt "HTTP/1.1 200 OK"
+2026-10-17 14:21:43 - httpx2 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0fa89d2f80546fda750413ed43d93601a13/tokenizer.json "HTTP/1.1 404 Not Found"
+2026-10-17 14:21:43 - httpx2 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0fa89d2f80546fda750413ed43d93601a13/added_tokens.json "HTTP/1.1 404 Not Found"
+2026-10-17 14:21:43 - httpx2 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0fa89d2f80546fda750413ed43d93601a13/special_tokens_map.json "HTTP/1.1 404 Not Found"
+2026-10-17 14:21:44 - httpx2 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0fa89d2f80546fda750413ed43d93601a13/chat_template.jinja "HTTP/1.1 404 Not Found"
+2026-10-17 14:21:44 - httpx2 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0fa89d2f80546fda750413ed43d93601a13/processor_config.json "HTTP/1.1 404 Not Found"
+2026-10-17 14:21:44 - httpx2 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0fa89d2f80546fda750413ed43d93601a13/video_preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-10-17 14:21:44 - httpx2 - INFO - HTTP Request: HEAD https://huggingface.co/distilbert-base-uncased-finetuned-sst-2-english/resolve/714eb0fa89d2f80546fda750413ed43d93601a13/preprocessor_config.json "HTTP/1.1 404 Not Found"
+2026-10-17 14:21:45 - __main__ - INFO - File path: ./data/original/amazon_google_reviews.csv
+2026-10-17 14:21:45 - __main__ - INFO - Data loaded successfully.
+2026-10-17 14:21:45 - __main__ - INFO - DataFrame shape: (6200, 7)
+2026-10-17 14:21:45 - __main__ - INFO - DataFrame preview:
+       Review_ID          Platform                   Product/Location_Name                                        Review_Text  Rating        Date  Helpful_Votes
+0  REV-GOO-00001  Google Locations       Metropolitan Dental Health Clinic  Terrible hygiene and filthy tables. Saw flies ...       1  13.10.2022              1
+1  REV-GOO-00002  Google Locations          Blue Bottle Artisan Coffee Bar  Incredible place to visit! Breathtaking flora,...       5  07.03.2022             30
+2  REV-AMA-00003            Amazon       Bedsure Cooling Bamboo Bed Sheets  Simply brilliant. I was skeptical at first, bu...       5  09.05.2024              3
+3  REV-GOO-00004  Google Locations                  Bella Italia Trattoria  Bought this recently. Outstanding service and ...       5  15.05.2024              2
+4  REV-AMA-00005            Amazon  Instant Pot Duo 7-in-1 Pressure Cooker  Honestly, absolute perfection! easily the best...       5  18.02.2024             32
+2026-10-17 14:21:45 - __main__ - INFO - ##################################################
+2026-10-17 14:21:45 - __main__ - INFO - Google_Locations_Metropolitan_Dental_Health_Clinic.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Google_Locations_Blue_Bottle_Artisan_Coffee_Bar.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Google_Locations_Bella_Italia_Trattoria.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Google_Locations_Highland_Public_Library_&_Cultural_Center.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Google_Locations_Golden_Dragon_Dim_Sum_Palace.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Google_Locations_City_View_Botanical_Gardens_&_Park.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Google_Locations_Greenwich_Boutique_Bed_&_Breakfast.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Google_Locations_The_Grand_Vista_Luxury_Hotel_&_Spa.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Google_Locations_Sakura_Japanese_Sushi_&_Ramen.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Google_Locations_Precision_Auto_Mechanics_&_Body_Works.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Google_Locations_Central_City_Fitness_&_CrossFit.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Google_Locations_Urban_Yoga_&_Wellness_Studio.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Amazon_Bedsure_Cooling_Bamboo_Bed_Sheets.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Amazon_Instant_Pot_Duo_7-in-1_Pressure_Cooker.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Amazon_Deep_Learning_with_Python_by_Francois_Chollet.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Amazon_Logitech_MX_Master_3S_Wireless_Mouse.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Amazon_Keurig_K-Elite_Single_Serve_Coffee_Maker.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Amazon_Atomic_Habits_by_James_Clear.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Amazon_Columbia_Men's_Watertight_II_Rain_Jacket.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Amazon_Men's_Lightweight_Breathable_Running_Shoes.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Amazon_Sony_WH-1000XM5_Noise_Canceling_Headphones.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Amazon_Kindle_Paperwhite_(16_GB).csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Amazon_Ninja_Air_Fryer_Pro_XL.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Amazon_Echo_Dot_Smart_Speaker.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - Amazon_Anker_65W_GaN_Fast_Charger.csv created.
+2026-10-17 14:21:45 - __main__ - INFO - total csv created: 25
+2026-10-17 14:21:46 - __main__ - INFO - DataFrame with Sentiment column: 
+           Platform   Product/Location_Name                                        Review_Text  Total_Reviews  Average_Rating  Total_Helpful_Votes Sentiment
+0  Google Locations  Bella Italia Trattoria  Absolute 5-star experience! Our server was kno...              2             5.0                   40  POSITIVE
+1  Google Locations  Bella Italia Trattoria  Absolute 5-star experience! Our server was kno...              1             5.0                    4  POSITIVE
+2  Google Locations  Bella Italia Trattoria  Absolute 5-star experience! Our server was kno...              1             5.0                    1  POSITIVE
+3  Google Locations  Bella Italia Trattoria  Absolute 5-star experience! Our server was kno...              2             5.0                    8  POSITIVE
+4  Google Locations  Bella Italia Trattoria  Average experience overall. Convenient locatio...              2             3.0                    0  NEGATIVE
